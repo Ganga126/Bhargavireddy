@@ -1,0 +1,63 @@
+#include <vector>
+#include <string>
+#include <unordered_map>
+using namespace std;
+
+class Solution {
+public:
+    vector<int> findSubstring(string s, vector<string>& words) {
+        vector<int> result;
+        if (words.empty() || s.empty()) return result;
+
+        int word_len = words[0].size();
+        int word_count = words.size();
+        int total_len = word_len * word_count;
+
+        if (s.size() < total_len) return result;
+
+        // Frequency map for the words
+        unordered_map<string, int> word_freq;
+        for (const string& w : words) {
+            word_freq[w]++;
+        }
+
+        // Slide over word_len different offsets
+        for (int i = 0; i < word_len; ++i) {
+            int left = i, count = 0;
+            unordered_map<string, int> window_map;
+
+            for (int j = i; j <= (int)s.size() - word_len; j += word_len) {
+                string word = s.substr(j, word_len);
+                if (word_freq.find(word) != word_freq.end()) {
+                    window_map[word]++;
+                    count++;
+
+                    // If word appears more than needed, move left pointer
+                    while (window_map[word] > word_freq[word]) {
+                        string left_word = s.substr(left, word_len);
+                        window_map[left_word]--;
+                        left += word_len;
+                        count--;
+                    }
+
+                    // If all words matched, record the start index
+                    if (count == word_count) {
+                        result.push_back(left);
+                        // Move left to look for new matches
+                        string left_word = s.substr(left, word_len);
+                        window_map[left_word]--;
+                        left += word_len;
+                        count--;
+                    }
+                } else {
+                    // Word not found, reset the window
+                    window_map.clear();
+                    count = 0;
+                    left = j + word_len;
+                }
+            }
+        }
+
+        return result;
+    }
+};

@@ -1,0 +1,28 @@
+public class LCS {
+    static int[][] dp;
+    public static int lcs_memo(String x, String y, int i, int j) {
+        if (i == x.length() || j == y.length()) {
+            return 0;  
+        }
+        if (dp[i][j] != -1) {
+            return dp[i][j];  
+        }
+        if (x.charAt(i) == y.charAt(j)) {
+            dp[i][j] = 1 + lcs_memo(x, y, i + 1, j + 1);
+        } else {
+            dp[i][j] = Math.max(lcs_memo(x, y, i + 1, j), lcs_memo(x, y, i, j + 1));
+        }
+        return dp[i][j];
+    }
+    public static void main(String[] args) {
+        String s1 = "muytftr";
+        String s2 = "sdefrt";
+        dp = new int[s1.length()][s2.length()];
+        for (int i = 0; i < s1.length(); i++) {
+            for (int j = 0; j < s2.length(); j++) {
+                dp[i][j] = -1;  // Initialize dp with -1 (meaning "not computed yet")
+            }
+        }
+        System.out.println("Length of LCS is: " + lcs_memo(s1, s2, 0, 0));
+    }
+}
